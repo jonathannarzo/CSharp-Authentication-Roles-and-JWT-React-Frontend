@@ -1,0 +1,44 @@
+BACKEND
+	Services folder
+	Configuration folder
+	ServiceExtensions.cs
+	TokenLifetimeValidator.cs
+	Controllers
+	- AccountController.cs
+	- RolesController.cs
+	Models
+	- UserRole.cs
+	- UserDTO.cs
+	- Roles.cs
+	- RoleDTO.cs
+	- ApiUser.cs
+	- Auditable.cs
+	Data/ApplicationDbContext.cs
+	
+links:
+	http://localhost:5186/api/Account/login
+	Data:
+		email
+		password
+
+
+AppSettings:
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+        "ShopDb" : "Server=localhost;Port=5432;Database=shop;User Id=postgres;Password=12345;"
+    },
+    "Jwt":{
+        "Issuer" : "shopAPI",
+        "lifetime" : 10,
+        "refreshtoken" : 30
+    }
+}
+
+
