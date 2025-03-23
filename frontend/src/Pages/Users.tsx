@@ -2,7 +2,7 @@ import { Modal } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Users = () => {
@@ -109,6 +109,7 @@ const Users = () => {
                 toast.success("Customer successfully added!");
                 getDataList();
                 resetForm();
+                handleModalClose();
                 return true;
             })
             .catch(function (error) {
@@ -136,7 +137,7 @@ const Users = () => {
                 setRolesData((prevState) => {
                     const newState = Array.from(prevState);
                     prevState.map((item, index) => {
-                        // if role is ann role array of user then set check box to checked(true) else checked(false)
+                        // if role is a role array of user then set check box to checked(true) else checked(false)
                         newState[index]["checked"] =
                             roleArr.indexOf(item.name) > -1 ? true : false;
                     });
@@ -216,6 +217,18 @@ const Users = () => {
             });
     };
 
+    /**
+     * Transform Data into an object where ID becomes a key
+     */
+    const rolesById = useMemo(() => {
+        return rolesData.reduce((acc, role) => {
+            acc[role.id] = role;
+            return acc;
+        }, {} as Record<string, any>);
+    }, [rolesData]);
+    // Returns the role name of the specified id
+    const returnUserRole = (id: string) => rolesById[id].name;
+
     // Clear all form fields
     const resetForm = () => {
         setformData({
@@ -276,6 +289,7 @@ const Users = () => {
                         <th>Email</th>
                         <th>FirstName</th>
                         <th>LastName</th>
+                        <th>Role</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -285,6 +299,17 @@ const Users = () => {
                             <td>{item.email}</td>
                             <td>{item.firstName}</td>
                             <td>{item.lastName}</td>
+                            <td>
+                                {item.userRoles?.length ? (
+                                    item.userRoles.map((ui: any, n: number) => (
+                                        <div key={n}>
+                                            {returnUserRole(ui.roleId)}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>No roles assigned</div>
+                                )}
+                            </td>
                             <td>
                                 <button
                                     className="btn btn-primary btn-sm"
