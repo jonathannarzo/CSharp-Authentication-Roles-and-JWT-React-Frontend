@@ -45,6 +45,27 @@ public class AccountController : ControllerBase
         {
             int pageSize = 5;
             var data = await PaginatedList<ApiUser>.CreateAsync(UsersData, pageNum ?? 1, pageSize);
+            var userIds = data.Select(u => u.Id).ToList();  // Extract IDs into a separate list
+
+            // Roles of the users that are fetched
+            var userRolesData = await _context.UserRoles
+                .Where(ur => userIds.Contains(ur.UserId))
+                .ToListAsync();
+
+            // Create a lookup for roles by UserId for efficient lookup later
+            var userRolesLookup = userRolesData
+                .GroupBy(ur => ur.UserId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // Now, for each user, assign the corresponding roles from the lookup
+            foreach (var user in data)
+            {
+                if (userRolesLookup.TryGetValue(user.Id, out var roles))
+                {
+                    user.UserRoles = roles.Select(ur => new UserRole { UserId = ur.UserId, RoleId = ur.RoleId }).ToList();
+                }
+            }
+            
             return Ok(new
             {
                 dataList = data,

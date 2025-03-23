@@ -22,6 +22,22 @@ public class AppDbContext : IdentityDbContext<ApiUser>
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new RoleConfiguration());
+
+        builder.Entity<ApiUser>(b =>
+        {
+            b.HasMany(e => e.UserRoles)
+            .WithOne(e => e.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
+        });
+
+        builder.Entity<Roles>(b =>
+        {
+            b.HasMany(e => e.UserRoles)
+            .WithOne(e => e.Role)
+            .HasForeignKey(ur => ur.RoleId)
+            .IsRequired();
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

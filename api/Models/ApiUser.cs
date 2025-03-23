@@ -11,6 +11,5 @@ public class ApiUser : IdentityUser, IAuditable
     public DateTimeOffset? DateCreated { get; set; }
     public DateTimeOffset? DateUpdated { get; set; }
 
-    [NotMapped]
     public virtual ICollection<UserRole> UserRoles { get; set; }
 }
